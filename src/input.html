@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Input</title>
+
+</head>
+
+<body>
+    <style>
+ 
+
+        .search {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            text-align: center;
+     
+        }
+
+        .search__input {
+            font-family: inherit;
+            font-size: inherit;
+            background-color: #f4f2f2;
+            border: none;
+            color: #222;
+            padding: 0.7rem 1rem;
+            border-radius: 30px;
+            width: 80%;
+            transition: all ease-in-out .5s;
+            margin-right: -2rem;
+        }
+
+        .search__input:hover,
+        .search__input:focus {
+            box-shadow: 0 0 1em #00000013;
+        }
+
+        .search__input:focus {
+            outline: none;
+            background-color: #f0eeee;
+        }
+
+        .search__input::-webkit-input-placeholder {
+            font-weight: 100;
+            color: #222;
+        }
+
+        .search__input:focus+.search__button {
+            background-color: #f0eeee;
+        }
+
+        .search__button {
+            border: none;
+            background-color: #f4f2f2;
+            margin-top: .1em;
+        }
+
+        .search__button:hover {
+            cursor: pointer;
+        }
+
+        .search__icon {
+            height: 1.3em;
+            width: 1.3em;
+            fill: #b4b4b4;
+        }
+
+
+        #appList {
+            list-style-type: none;
+            padding: 0;
+            margin-top: 10px;
+        }
+
+        #appList li {
+            padding: 10px;
+            background-color: #f4f2f2;
+            border-radius: 5px;
+            margin-bottom: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #appList li:hover {
+            background-color: #f0eeee;
+        }
+    </style>
+
+    <input id="searchGlobal" type="text" class="search__input" placeholder="Type your text">
+
+    <ul id="appList"></ul>
+
+
+    <script>
+        const {
+            ipcRenderer
+        } = require('electron');
+
+
+        document.getElementById("searchGlobal").focus();
+        const searchInput = document.getElementById('searchGlobal');
+        const appList = document.getElementById('appList');
+
+        searchInput.addEventListener('input', () => {
+            const query = searchInput.value.toLowerCase();
+            ipcRenderer.send('filter-apps', query);
+        });
+
+
+        appList.addEventListener('click', (event) => {
+            if (event.target.tagName === 'LI') {
+                const appName = event.target.textContent;
+                ipcRenderer.send('open-app', appName);
+            }
+        });
+
+        ipcRenderer.on('update-app-list', (event, apps) => {
+            appList.innerHTML = '';
+            apps.forEach(app => {
+                const listItem = document.createElement('li');
+                listItem.textContent = app;
+                appList.appendChild(listItem);
+            });
+        });
+
+
+        searchInput.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                const query = searchInput.value.trim();
+                ipcRenderer.send('search-google', query);
+            }
+        });
+
+ 
+
+        appList.addEventListener('click', (event) => {
+    if (event.target.tagName === 'LI') {
+        const appName = event.target.textContent;
+        ipcRenderer.send('open-app', appName); // Aquí envía el nombre de la aplicación al proceso principal
+    }
+});
+ 
+
+
+    </script>
+</body>
+
+</html>
