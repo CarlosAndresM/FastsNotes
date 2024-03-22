@@ -322,9 +322,6 @@
  .save .submit-btn:hover {
    background-color: #212121;
    box-shadow: -5px 6px 20px 0px rgba(88, 88, 88, 0.569);
-<<<<<<< HEAD
- }
-=======
  }
 
 
@@ -339,15 +336,11 @@
 .context-menu-item {
   cursor: pointer;
   padding: 5px 20px;
+  color: black;
 }
 
 .context-menu-item:hover {
   background-color: #f0f0f0;
 }
 
-
-
-h1{
-  background-color: red;
-}
->>>>>>> ffd04c7 (Guardado de texto en la base de datos y recuperacion de manera correcta)
+ 

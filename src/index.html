@@ -1,6 +1,3 @@
-<!DOCTYPE html>
-<html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -54,11 +51,7 @@
 
         </aside>
         <main class="main">
-<<<<<<< HEAD
-            <div class="content-notes" id="editorjs">
-=======
             <div class="content-notes" id="editorjs" spellcheck="false" >
->>>>>>> ffd04c7 (Guardado de texto en la base de datos y recuperacion de manera correcta)
 
 
             </div>
@@ -86,27 +79,21 @@
                 </div>
 
             </div>
-<<<<<<< HEAD
-=======
-            
->>>>>>> ffd04c7 (Guardado de texto en la base de datos y recuperacion de manera correcta)
+
+
+
+    <div class="context-menu" id="context-menu">
+        <div class="context-menu-item" data-command="title">Título</div>
+        <div class="context-menu-item" data-command="subtitle">Subtítulo</div>
+        <div class="context-menu-item" data-command="underline">Subrayado</div>
+        <div class="context-menu-item" data-command="bold">Negrita</div>
+        <div class="context-menu-item" data-command="table">Insertar Tabla</div>
+        <div class="context-menu-item" data-command="list">Convertir a Lista</div>
+    </div>
 
 
 
         </main>
-<<<<<<< HEAD
-=======
-
-
-        <div class="context-menu" id="context-menu">
-            <div class="context-menu-item" data-command="title">Título</div>
-            <div class="context-menu-item" data-command="subtitle">Subtítulo</div>
-            <div class="context-menu-item" data-command="underline">Subrayado</div>
-            <div class="context-menu-item" data-command="bold">Negrita</div>
-            <div class="context-menu-item" data-command="table">Insertar Tabla</div>
-            <div class="context-menu-item" data-command="list">Convertir a Lista</div>
-        </div>
->>>>>>> ffd04c7 (Guardado de texto en la base de datos y recuperacion de manera correcta)
     </div>
 
 
@@ -114,28 +101,11 @@
 
     <script>
         const main = require('../main.js');
-<<<<<<< HEAD
+ 
 
-        let editor;
-
-        function initializeEditor() {
-
-            const EditorJS = require('@editorjs/editorjs');
-            const Header = require('@editorjs/header');
-            const List = require('@editorjs/list');
-            editor = new EditorJS({
-                holder: 'editorjs',
-                tools: {
-                    header: Header,
-                    list: List
-                }
-            });
-        }
-
-=======
         const editor = document.getElementById('editorjs');
         const contextMenu = document.getElementById('context-menu');
-  
+
         editor.addEventListener('contextmenu', (e) => {
             e.preventDefault();
             contextMenu.style.display = 'block';
@@ -152,20 +122,17 @@
         contextMenu.addEventListener('click', (e) => {
             const command = e.target.dataset.command;
             if (command) {
-                if (command === 'insert-table' || command === 'insert-list') {
-                    // En caso de insertar tabla o lista, ejecutar el comando directamente
-                    document.execCommand(command);
-                } else {
-                    // En otros casos, envolver el texto seleccionado en la etiqueta correspondiente
-                    const selection = window.getSelection();
+                const selection = window.getSelection();
+                if (selection.rangeCount > 0) {
                     const range = selection.getRangeAt(0);
                     const wrapper = document.createElement(command);
+                    wrapper.className = 'titulo'; // Aplica la clase correspondiente
                     range.surroundContents(wrapper);
                 }
             }
             contextMenu.style.display = 'none';
         });
->>>>>>> ffd04c7 (Guardado de texto en la base de datos y recuperacion de manera correcta)
+
 
 
         const listNotes = document.getElementById('list-notes');
@@ -193,31 +160,6 @@
         });
  
         async function renderNotesDescription(nota) {
-<<<<<<< HEAD
-            const contentNote = document.getElementById('editorjs'); 
-            const EditorJS = require('@editorjs/editorjs');
-            const Header = require('@editorjs/header');
-            const List = require('@editorjs/list');
-            try {
-
-            contentNote.focus()
-
-        const editor = new EditorJS({
-            holder: 'editorjs',
-            
-            
-            autofocus: true,
-            data: nota, // Pasar los datos al inicializar el editor
-            tools: { // Configurar los módulos que deseas utilizar
-                header: Header,
-                list: List
-                // Aquí puedes agregar más módulos según sea necesario
-            }
-        });
-    } catch (error) {
-        console.error('Error al inicializar el EditorJS:', error);
-    }
-=======
             const contentNote = document.getElementById('editorjs');  
             const contentNoteClass = document.querySelector('.content-notes');
          
@@ -225,7 +167,6 @@
                 contentNote.focus()
                 contentNoteClass.setAttribute("contenteditable", true);
   
->>>>>>> ffd04c7 (Guardado de texto en la base de datos y recuperacion de manera correcta)
 }
 
 
@@ -259,12 +200,7 @@ listNotes.addEventListener('click', async function (event) {
             const modalContainer = document.querySelector('.modal-content');
             const inputTitleNote = document.getElementById('noteTitle')
             generate.addEventListener('click', function (e) {
-<<<<<<< HEAD
-                modal.style.display = 'block';
-                inputTitleNote.focus()
-=======
                 modal.style.display = 'block'; 
->>>>>>> ffd04c7 (Guardado de texto en la base de datos y recuperacion de manera correcta)
             });
 
             closeGenerate.addEventListener('click', function (e) {
@@ -280,11 +216,7 @@ listNotes.addEventListener('click', async function (event) {
             // Renderizar las notas
             notes.forEach(note => {
                 const listItem = document.createElement('li');
-<<<<<<< HEAD
-                listItem.textContent = note.titulo;
-=======
                 listItem.innerText = note.titulo;
->>>>>>> ffd04c7 (Guardado de texto en la base de datos y recuperacion de manera correcta)
                 listItem.dataset.id = note.id;
                 listItem.classList.add('nota')
 
@@ -344,11 +276,7 @@ listNotes.addEventListener('click', async function (event) {
  
         contentNotes.addEventListener('input', async function (event) {
             // Obtener el contenido actualizado del área de contenido
-<<<<<<< HEAD
-            const updatedContent = contentNotes.textContent;
-=======
             const updatedContent = contentNotes.innerText;
->>>>>>> ffd04c7 (Guardado de texto en la base de datos y recuperacion de manera correcta)
             // Obtener el ID de la nota activa
             const activeNoteId = listNotes.querySelector('.active').dataset.id;
             // Actualizar la base de datos con el contenido actualizado
