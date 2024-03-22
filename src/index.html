@@ -1,0 +1,296 @@
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./index.css">
+
+    <title>Notas Rapidas</title>
+</head>
+
+<body>
+
+    <div class="title-bar" id="title-bar">
+
+    </div>
+
+
+    <div class="content">
+
+        <svg clas="button" id="close-btn" xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="#FFF"
+            class="bi bi-x" viewBox="0 0 16 16">
+            <path
+                d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708" />
+        </svg>
+        <aside class="aside">
+
+
+            <input class="input-search" type="text" name="" placeholder="Buscar Notas" id="search">
+
+
+            <div class="list-notes">
+                <ul id="list-notes">
+                </ul>
+            </div>
+
+
+
+
+
+            <div class="new" id="generate">
+                <button class="btn">
+                    <svg height="16" width="16" fill="#FFFFFF" viewBox="0 0 24 24" data-name="Layer 1" id="Layer_1"
+                        class="sparkle">
+                        <path
+                            d="M10,21.236,6.755,14.745.264,11.5,6.755,8.255,10,1.764l3.245,6.491L19.736,11.5l-6.491,3.245ZM18,21l1.5,3L21,21l3-1.5L21,18l-1.5-3L18,18l-3,1.5ZM19.333,4.667,20.5,7l1.167-2.333L24,3.5,21.667,2.333,20.5,0,19.333,2.333,17,3.5Z">
+                        </path>
+                    </svg>
+
+                    <span class="text">Crear nota</span>
+                </button>
+            </div>
+
+
+        </aside>
+        <main class="main">
+            <div class="content-notes" id="editorjs" spellcheck="false" >
+
+
+            </div>
+
+
+
+            <div id="modal" class="modal">
+                <div class="modal-content">
+
+                    <span class="close">X</span>
+
+
+
+                    <div class="save">
+                        <form id="note-form" class="form">
+                            <p>Titulo de nota</p>
+                            <input id="noteTitle" placeholder="Escribe..." class="save-input" name="note-title"
+                                type="text">
+                            <br>
+                            <button type="submit" class="submit-btn">Guardar</button>
+                        </form>
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+
+    <div class="context-menu" id="context-menu">
+        <div class="context-menu-item" data-command="title">Título</div>
+        <div class="context-menu-item" data-command="subtitle">Subtítulo</div>
+        <div class="context-menu-item" data-command="underline">Subrayado</div>
+        <div class="context-menu-item" data-command="bold">Negrita</div>
+        <div class="context-menu-item" data-command="table">Insertar Tabla</div>
+        <div class="context-menu-item" data-command="list">Convertir a Lista</div>
+    </div>
+
+
+
+        </main>
+    </div>
+
+
+    <script src="./script.js"></script>
+
+    <script>
+        const main = require('../main.js');
+ 
+
+        const editor = document.getElementById('editorjs');
+        const contextMenu = document.getElementById('context-menu');
+
+        editor.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            contextMenu.style.display = 'block';
+            contextMenu.style.left = e.pageX + 'px';
+            contextMenu.style.top = e.pageY + 'px';
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!contextMenu.contains(e.target) && e.target !== editor && e.button === 0) {
+                contextMenu.style.display = 'none';
+            }
+        });
+
+        contextMenu.addEventListener('click', (e) => {
+            const command = e.target.dataset.command;
+            if (command) {
+                const selection = window.getSelection();
+                if (selection.rangeCount > 0) {
+                    const range = selection.getRangeAt(0);
+                    const wrapper = document.createElement(command);
+                    wrapper.className = 'titulo'; // Aplica la clase correspondiente
+                    range.surroundContents(wrapper);
+                }
+            }
+            contextMenu.style.display = 'none';
+        });
+
+
+
+        const listNotes = document.getElementById('list-notes');
+        const searchInput = document.getElementById('search')
+        const modal = document.getElementById('modal');
+        const generarNota = document.getElementById('note-form');
+        const contentNotes = document.querySelector('.content-notes');
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const noteForm = document.getElementById('note-form');
+
+            noteForm.addEventListener('submit', async function (e) {
+                e.preventDefault(); // Evitar la recarga de la página
+
+                // Obtener el valor del campo de entrada
+                const noteTitle = noteForm.elements['note-title'].value;
+
+                // Insertar la nota en la base de datos como una cadena JSON
+                const insertarNota = await main.insertNote(noteTitle, '');
+
+                // Renderizar la lista de notas
+                renderList();
+                modal.style.display = 'none';
+            });
+        });
+ 
+        async function renderNotesDescription(nota) {
+            const contentNote = document.getElementById('editorjs');  
+            const contentNoteClass = document.querySelector('.content-notes');
+         
+            contentNote.innerText = nota;
+                contentNote.focus()
+                contentNoteClass.setAttribute("contenteditable", true);
+  
+}
+
+
+
+
+listNotes.addEventListener('click', async function (event) {
+            if (event.target.tagName === 'LI') {
+                // Remover la clase 'active' de todas las notas
+                const notes = listNotes.querySelectorAll('li');
+                notes.forEach(note => {
+                    note.classList.remove('active');
+                });
+
+                // Agregar la clase 'active' a la nota clicada
+                const clickedNote = event.target;
+                clickedNote.classList.add('active');
+
+                // Obtener el ID de la nota activa
+                const id = clickedNote.dataset.id;
+                const data = await main.searchNotesByID(id);
+                const info = data.descripcion;
+                renderNotesDescription(info);
+            }
+        });
+
+
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const generate = document.getElementById('generate');
+            const closeGenerate = document.querySelector('.close');
+            const modalContainer = document.querySelector('.modal-content');
+            const inputTitleNote = document.getElementById('noteTitle')
+            generate.addEventListener('click', function (e) {
+                modal.style.display = 'block'; 
+            });
+
+            closeGenerate.addEventListener('click', function (e) {
+                modal.style.display = 'none';
+            });
+        });
+
+
+        // Funcion para renderizar las notas
+        async function renderNotes(notes) {
+            // Limpiar la lista de notas
+            listNotes.innerHTML = '';
+            // Renderizar las notas
+            notes.forEach(note => {
+                const listItem = document.createElement('li');
+                listItem.innerText = note.titulo;
+                listItem.dataset.id = note.id;
+                listItem.classList.add('nota')
+
+                listNotes.appendChild(listItem);
+
+            });
+
+            // Agregar event listener a las notas
+            const nota = document.querySelectorAll('.nota');
+            nota.forEach(note => {
+                note.addEventListener('click', function (e) {
+                    // Quitamos la clase 'selected' de todos los elementos 'nota'
+                    nota.forEach(item => {
+                        item.classList.remove('selected');
+                   
+                    });
+                    // Agregamos la clase 'selected' al elemento clicado
+                    note.classList.add('selected');
+                });
+            });
+        }
+
+
+
+
+        async function renderList() {
+            const notas = await main.searchNotes();
+            renderNotes(notas);
+        }
+
+
+
+
+        // Función para filtrar las notas según el término de búsqueda
+        async function filterNotes() {
+            const searchTerm = searchInput.value.toLowerCase()
+                .trim(); // Obtener el término de búsqueda en minúsculas
+            const notas = await main.searchNotes(); // Obtener todas las notas
+
+            // Filtrar las notas según el término de búsqueda
+            const filteredNotes = notas.filter(note => {
+                return note.titulo.toLowerCase().includes(
+                    searchTerm
+                ); // Comprobar si el título de la nota incluye el término de búsqueda
+            });
+
+            // Renderizar las notas filtradas
+            renderNotes(filteredNotes);
+        }
+
+
+
+        searchInput.addEventListener('input', filterNotes);
+
+
+
+ 
+        contentNotes.addEventListener('input', async function (event) {
+            // Obtener el contenido actualizado del área de contenido
+            const updatedContent = contentNotes.innerText;
+            // Obtener el ID de la nota activa
+            const activeNoteId = listNotes.querySelector('.active').dataset.id;
+            // Actualizar la base de datos con el contenido actualizado
+            await main.updateNoteContent(activeNoteId, updatedContent);
+        });
+
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderList();
+
+
+
+        });
+    </script>
+</body>
+
+</html>
